@@ -56,9 +56,9 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+// IMPORTACIÓN CORREGIDA: Todo en una sola línea
+import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'; 
 import { db } from './firebase';
-import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'; // Asegúrate de importar deleteDoc
 
 const tramites = ref([]);
 
@@ -83,13 +83,12 @@ onMounted(() => {
   });
 });
 
-// NUEVO: Lógica computada para filtrar la lista en tiempo real
+// Lógica computada para filtrar la lista en tiempo real
 const tramitesFiltrados = computed(() => {
   return tramites.value.filter(tramite => {
     const coincideNombre = tramite.tipo_documento.toLowerCase().includes(filtroNombre.value.toLowerCase());
     const coincideDni = tramite.dni_ciudadano.includes(filtroDni.value);
     
-    // Debe coincidir con ambos filtros (si están vacíos, devuelve true por defecto)
     return coincideNombre && coincideDni;
   });
 });
@@ -106,6 +105,7 @@ const aprobarTramite = async (idDocumento) => {
   }
 };
 
+// Función para eliminar
 const eliminarTramite = async (idDocumento) => {
   if (confirm("¿Estás seguro de eliminar este trámite?")) {
     try {
