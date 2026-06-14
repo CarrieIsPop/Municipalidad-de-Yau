@@ -35,9 +35,13 @@
         <p><strong>DNI Solicitante:</strong> {{ tramite.dni_ciudadano }}</p>
         <p><strong>Estado Actual:</strong> <span class="estado">{{ tramite.estado }}</span></p>
 
-        <div class="acciones" v-if="tramite.estado === 'Pendiente'">
-          <button @click="aprobarTramite(tramite.id)" class="btn-aprobar">
-            ✓ Aprobar Trámite
+        <div class="acciones">
+          <button v-if="tramite.estado === 'Pendiente'" @click="aprobarTramite(tramite.id)" class="btn-aprobar">
+            ✓ Aprobar
+          </button>
+          <!-- Nuevo botón de eliminar -->
+          <button @click="eliminarTramite(tramite.id)" class="btn-eliminar">
+          🗑️ Eliminar
           </button>
         </div>
       </div>
@@ -54,6 +58,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
+import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'; // Asegúrate de importar deleteDoc
 
 const tramites = ref([]);
 
@@ -98,6 +103,16 @@ const aprobarTramite = async (idDocumento) => {
     alert('¡Trámite aprobado exitosamente!');
   } catch (error) {
     console.error('Error al actualizar: ', error);
+  }
+};
+
+const eliminarTramite = async (idDocumento) => {
+  if (confirm("¿Estás seguro de eliminar este trámite?")) {
+    try {
+      await deleteDoc(doc(db, 'tramites', idDocumento));
+    } catch (error) {
+      console.error('Error al eliminar: ', error);
+    }
   }
 };
 </script>
@@ -246,4 +261,15 @@ header p {
 
 /* Color para prioridad baja que agregamos en la vista */
 .badge.baja { background-color: #f3f4f6; color: #4b5563; }
+
+.btn-eliminar {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.btn-eliminar:hover { background-color: #dc2626; }
 </style>
